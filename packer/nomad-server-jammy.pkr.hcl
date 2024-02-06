@@ -8,7 +8,7 @@ source "proxmox-iso" "nomad" {
   insecure_skip_tls_verify = true
 
   #VM General Settings
-  node                 = "proxmox"
+  node                 = "pve"
   vm_id                = "399"
   vm_name              = "ubuntu-server-jammy-nomad"
   template_description = "Ubuntu Server 22.04 Test Image with Docker and Nomad pre-installed"
@@ -67,7 +67,6 @@ source "proxmox-iso" "nomad" {
 
   # PACKER Autoinstall Settings
   http_directory = "http"
-  http_interface = "100.106.166.94"
 
   ssh_username         = "alex"
   ssh_private_key_file = "~/.ssh/github_ed25519"
@@ -84,14 +83,7 @@ build {
   provisioner "shell" {
     inline = [
       "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
-      "sudo rm /etc/ssh/ssh_host_*",
-      "sudo truncate -s 0 /etc/machine-id",
-      "sudo apt -y autoremove --purge",
-      "sudo apt -y clean",
-      "sudo apt -y autoclean",
-      "sudo cloud-init clean",
       "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
-      "sudo sync"
     ]
   }
 
@@ -145,91 +137,109 @@ build {
       "echo '=============================================='",
       "echo 'APT INSTALL PACKAGES & UPDATES'",
       "echo '=============================================='",
-      "echo 'UPDATING PACKAGES'",
       "sudo apt-get update",
-      "echo 'INSTALLING TOOLS'",
       "sudo apt-get -y install --no-install-recommends apt-utils git unzip wget",
-      #"echo 'UPGRADING PACKAGES'",
-      #"sudo apt-get -y upgrade",
+      "sudo apt-get -y upgrade",
       #"echo 'DIST UPGRADE'",
       #"sudo apt-get -y dist-upgrade",
-      #"echo 'AUTOREMOVE'",
-      #"sudo apt-get -y autoremove",
+      "sudo apt-get -y autoremove",
 
       #"echo 'Rebooting...'",
       #"sudo reboot"
     ]
   }
 
-  #provisioner "shell" {
-  #  inline = [
-  #    "echo '=============================================='",
-  #    "echo 'CREATE CONSUL USER & GROUP'",
-  #    "echo '=============================================='",
-  #    "sudo addgroup --system consul",
-  #    "sudo adduser --system --ingroup consul consul",
-  #    "sudo usermod -aG docker consul",
-  #    "sudo mkdir -p /etc/consul.d/ssl",
-  #    "sudo mkdir -p /opt/consul",
-  #    "sudo mkdir -p /var/log/consul",
-  #    "sudo chown -R consul:consul /etc/consul.d",
-  #    "sudo chown -R consul:consul /opt/consul",
-  #    "sudo chown -R consul:consul /var/log/consul",
-  #    "sudo chmod 750 /etc/consul.d/ssl",
-  #  ]
-  #}
+  provisioner "shell" {
+    inline = [
+      "echo '=============================================='",
+      "echo 'CREATE CONSUL USER & GROUP'",
+      "echo '=============================================='",
+      "sudo addgroup --system consul",
+      "sudo adduser --system --ingroup consul consul",
+      "sudo usermod -aG docker consul",
+      "sudo mkdir -p /etc/consul.d/ssl",
+      "sudo mkdir -p /opt/consul",
+      "sudo mkdir -p /var/log/consul",
+      "sudo chown -R consul:consul /etc/consul.d",
+      "sudo chown -R consul:consul /opt/consul",
+      "sudo chown -R consul:consul /var/log/consul",
+      "sudo chmod 750 /etc/consul.d/ssl",
+    ]
+  }
 
-  #provisioner "shell" {
-  #  inline = [
-  #    "echo '=============================================='",
-  #    "echo 'DOWNLOAD CONSUL'",
-  #    "echo '=============================================='",
-  #    "wget https://releases.hashicorp.com/consul/${var.consul_version}/consul_${var.consul_version}_linux_${var.arch}.zip",
-  #    "unzip consul_${var.consul_version}_linux_${var.arch}.zip",
-  #    "sudo mv consul /usr/local/bin/",
-  #    "rm consul_${var.consul_version}_linux_${var.arch}.zip"
-  #  ]
-  #  max_retries = 3
-  #}
+  provisioner "shell" {
+    inline = [
+      "echo '=============================================='",
+      "echo 'DOWNLOAD CONSUL'",
+      "echo '=============================================='",
+      "wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg",
+      "echo \"deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/hashicorp.list",
+      "sudo apt -y update && sudo apt -y install consul",
 
-  #provisioner "shell" {
-  #  inline = [
-  #    "echo '=============================================='",
-  #    "echo 'CREATE NOMAD USER & GROUP'",
-  #    "echo '=============================================='",
-  #    "sudo addgroup --system nomad",
-  #    "sudo adduser --system --ingroup nomad nomad",
-  #    "sudo usermod -aG docker nomad",
-  #    "sudo mkdir -p /etc/nomad.d/ssl",
-  #    "sudo mkdir -p /opt/nomad",
-  #    "sudo chown -R nomad:nomad /etc/nomad.d",
-  #    "sudo chown -R nomad:nomad /opt/nomad",
-  #    "sudo chmod 750 /etc/nomad.d/ssl",
-  #  ]
-  #}
 
-  #provisioner "shell" {
-  #  inline = [
-  #    "echo '=============================================='",
-  #    "echo 'DOWNLOAD NOMAD'",
-  #    "echo '=============================================='",
-  #    "wget https://releases.hashicorp.com/nomad/${var.nomad_version}/nomad_${var.nomad_version}_linux_${var.arch}.zip",
-  #    "unzip nomad_${var.nomad_version}_linux_${var.arch}.zip",
-  #    "sudo mv nomad /usr/local/bin/",
-  #    "rm nomad_${var.nomad_version}_linux_${var.arch}.zip"
-  #  ]
-  #  max_retries = 3
-  #}
 
-  #provisioner "shell" {
-  #  expect_disconnect = "true"
-  #  inline = [
-  #    "which consul",
-  #    "which nomad",
-  #    "echo '=============================================='",
-  #    "echo 'BUILD COMPLETE'",
-  #    "echo '=============================================='"
-  #  ]
-  #}
+      #"wget https://releases.hashicorp.com/consul/${var.consul_version}/consul_${var.consul_version}_linux_${var.arch}.zip",
+      #"unzip consul_${var.consul_version}_linux_${var.arch}.zip",
+      #"sudo mv consul /usr/local/bin/",
+      #"rm consul_${var.consul_version}_linux_${var.arch}.zip"
+    ]
+    max_retries = 3
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo '=============================================='",
+      "echo 'CREATE NOMAD USER & GROUP'",
+      "echo '=============================================='",
+      "sudo addgroup --system nomad",
+      "sudo adduser --system --ingroup nomad nomad",
+      "sudo usermod -aG docker nomad",
+      "sudo mkdir -p /etc/nomad.d/ssl",
+      "sudo mkdir -p /opt/nomad",
+      "sudo chown -R nomad:nomad /etc/nomad.d",
+      "sudo chown -R nomad:nomad /opt/nomad",
+      "sudo chmod 750 /etc/nomad.d/ssl",
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo '=============================================='",
+      "echo 'DOWNLOAD NOMAD'",
+      "echo '=============================================='",
+      "sudo apt update && sudo apt install nomad",
+
+
+
+      #"wget https://releases.hashicorp.com/nomad/${var.nomad_version}/nomad_${var.nomad_version}_linux_${var.arch}.zip",
+      #"unzip nomad_${var.nomad_version}_linux_${var.arch}.zip",
+      #"sudo mv nomad /usr/local/bin/",
+      #"rm nomad_${var.nomad_version}_linux_${var.arch}.zip"
+    ]
+    max_retries = 3
+  }
+
+  provisioner "shell" {
+    expect_disconnect = "true"
+    inline = [
+      "which consul",
+      "which nomad",
+      "echo '=============================================='",
+      "echo 'BUILD COMPLETE'",
+      "echo '=============================================='"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo rm /etc/ssh/ssh_host_*",
+      "sudo truncate -s 0 /etc/machine-id",
+      "sudo apt -y autoremove --purge",
+      "sudo apt -y clean",
+      "sudo apt -y autoclean",
+      "sudo cloud-init clean",
+      "sudo sync"
+    ]
+  }
 }
 

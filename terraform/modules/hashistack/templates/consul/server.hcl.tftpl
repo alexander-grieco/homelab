@@ -1,0 +1,104 @@
+bind_addr = "${bind_addr}"
+encrypt = "${consul_encryption}"
+## ACL configuration
+acl = {
+  enabled = false
+  #default_policy = "deny"
+  #enable_token_persistence = true
+  #enable_token_replication = true
+  #down_policy = "extend-cache"
+}
+# agent-server-secure.hcl
+
+# Data Persistence
+data_dir = "/etc/consul/data"
+
+# Logging
+log_level = "DEBUG"
+
+# Enable service mesh
+connect {
+  enabled = true
+}
+
+# Addresses and ports
+addresses {
+  grpc = "0.0.0.0"
+  grpc_tls = "0.0.0.0"
+  https = "0.0.0.0"
+  dns = "0.0.0.0"
+  http = "0.0.0.0"
+}
+
+ports {
+  grpc_tls = 8503
+  grpc  = 8502
+  http  = 8500
+  https = 8501
+  dns   = 8600
+}
+
+# DNS recursors
+recursors = ["1.1.1.1"]
+
+# Disable script checks
+enable_script_checks = false
+disable_remote_exec = true
+
+# Enable local script checks
+enable_local_script_checks = true
+
+## Server specific configuration for homelab
+server = true
+bootstrap_expect = 1
+datacenter = "${consul_datacenter}"
+domain = "${domain}"
+node_name = "proxy"
+
+client_addr = "127.0.0.1"
+
+## UI configuration (1.9+)
+ui_config {
+  enabled = true
+}
+## TLS Encryption (requires cert files to be present on the server nodes)
+# tls {
+#   defaults {
+#     ca_file   = "/etc/consul/config/consul-agent-ca.pem"
+#     cert_file = "/etc/consul/config/homelab-server-alexgrieco.io-0.pem"
+#     key_file  = "/etc/consul/config/homelab-server-alexgrieco.io-0-key.pem"
+
+#     verify_outgoing        = true
+#     verify_incoming        = true
+#   }
+#   https {
+#     verify_incoming        = false
+#   }
+#   internal_rpc {
+#     verify_server_hostname = true
+#   }
+# }
+
+## TLS Encryption (requires cert files to be present on the server nodes)
+tls {
+  defaults {
+    ca_file   = "/etc/consul/config/consul-agent-ca.pem"
+    cert_file = "/etc/consul/config/${consul_datacenter}-server-${domain}-0.pem"
+    key_file  = "/etc/consul/config/${consul_datacenter}-server-${domain}-0-key.pem"
+    verify_incoming        = true 
+    verify_outgoing        = true
+  }
+  https {
+    verify_incoming = false
+  }
+  grpc {
+    verify_incoming = false
+  }
+  internal_rpc {
+    verify_server_hostname = true
+  }
+}
+
+auto_encrypt {
+  allow_tls = true
+}
