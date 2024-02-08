@@ -101,7 +101,7 @@ build {
   provisioner "shell" {
     inline = [
       "echo set debconf to Noninteractive",
-      "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections" ]
+    "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections"]
   }
 
   # Provisioning the VM Template with Docker Installation #4
