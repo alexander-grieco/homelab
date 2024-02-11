@@ -1,12 +1,13 @@
-resource "proxmox_vm_qemu" "proxy-node" {
-  name        = "proxy-node"
-  desc        = "proxy node"
-  vmid        = 380
-  target_node = "pve1"
+resource "proxmox_vm_qemu" "nomad-servers" {
+  count = var.server_count
+
+  name        = "nomad-server${count.index + 1}"
+  vmid        = parseint("10${count.index}", 10)
+  target_node = "pve"
 
   agent = 1 # Need this
 
-  clone   = "ubuntu-server-jammy-proxy"
+  clone   = "ubuntu-server-jammy-nomad"
   cores   = 2
   sockets = 1
   cpu     = "host"
@@ -17,15 +18,16 @@ resource "proxmox_vm_qemu" "proxy-node" {
   network {
     bridge  = "vmbr0"
     model   = "virtio"
-    macaddr = "10:00:00:00:00:01"
-    tag     = 2
+    tag     = var.vlan
   }
 
   disk {
-    storage = "local-zfs"
+    storage = "storage"
     type    = "scsi"
     size    = "64G"
   }
+
+  ipconfig0 = "gw=${var.network},ip=${var.network}${count.index}/32"
 
   os_type = "cloud-init"
   ciuser  = "alex"

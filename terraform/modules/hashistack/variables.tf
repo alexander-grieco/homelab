@@ -21,6 +21,19 @@ variable "private_key_file_content" {
   sensitive = true
 }
 
+variable "server_count" {
+  type = number
+  default = 3
+}
+
+variable "network" {
+  type = string
+}
+
+variable "vlan" {
+  type = number
+}
+
 #variable "domain" {
 #  type = string
 #}

@@ -21,6 +21,14 @@ variable "datacenter" {
   default = "homelab"
 }
 
+variable "network" {
+  type = string
+}
+
+variable "vlan" {
+  type = number
+}
+
 #variable "domain" {
 #  type    = string
 #  default = "home.alexgrieco.io"

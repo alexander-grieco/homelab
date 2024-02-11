@@ -53,7 +53,7 @@ server = true
 bootstrap_expect = 1
 datacenter = "${consul_datacenter}"
 domain = "${domain}"
-node_name = "proxy"
+node_name = "consul"
 
 client_addr = "127.0.0.1"
 
@@ -85,7 +85,7 @@ tls {
     ca_file   = "/etc/consul/config/consul-agent-ca.pem"
     cert_file = "/etc/consul/config/${consul_datacenter}-server-${domain}-0.pem"
     key_file  = "/etc/consul/config/${consul_datacenter}-server-${domain}-0-key.pem"
-    verify_incoming        = true 
+    verify_incoming        = true
     verify_outgoing        = true
   }
   https {
