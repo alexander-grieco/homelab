@@ -34,9 +34,9 @@ variable "vlan" {
 #  default = "home.alexgrieco.io"
 #}
 #
-#variable "tls_organization" {
-#  type = string
-#}
+variable "tls_organization" {
+  type = string
+}
 #
 #variable "acme" {
 #  type = object({

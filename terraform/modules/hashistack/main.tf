@@ -4,11 +4,11 @@ terraform {
   required_providers {
     proxmox = {
       source  = "telmate/proxmox"
-      version = "2.9.11"
+      version = "~> 2.9"
     }
     null = {
       source  = "hashicorp/null"
-      version = "3.2.1"
+      version = "~> 3.0"
     }
     local = {
       source  = "hashicorp/local"
@@ -20,11 +20,11 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.4.3"
+      version = "~> 3.4.3"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "4.0.4"
+      version = "~> 4.0"
     }
   }
 }

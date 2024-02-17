@@ -22,7 +22,12 @@ variable "private_key_file_content" {
 }
 
 variable "server_count" {
-  type = number
+  type    = number
+  default = 3
+}
+
+variable "client_count" {
+  type    = number
   default = 3
 }
 
@@ -38,9 +43,9 @@ variable "vlan" {
 #  type = string
 #}
 #
-#variable "tls_organization" {
-#  type = string
-#}
+variable "tls_organization" {
+  type = string
+}
 #
 #variable "consul_version" {
 #  type = string

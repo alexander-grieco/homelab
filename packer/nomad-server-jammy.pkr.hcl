@@ -9,29 +9,26 @@ source "proxmox-iso" "nomad" {
 
   #VM General Settings
   node                 = "pve"
-  vm_id                = "399"
+  vm_id                = "899"
   vm_name              = "ubuntu-server-jammy-nomad"
   template_description = "Ubuntu Server 22.04 Test Image with Docker and Nomad pre-installed"
 
   # VM OS Settings
-  iso_file = "local:iso/Ubuntu_22.04.3_Server.iso"
-  # iso_checksum     = "sha256:a4acfda10b18da50e2ec50ccaf860d7f20b389df8765611142305c0e911d16fd"
+  iso_file         = "local:iso/Ubuntu_22.04.3_Server.iso"
   iso_storage_pool = "local"
   unmount_iso      = true
 
   # VM System Settings
   qemu_agent = true
-  onboot     = true
 
   # VM Hard Disk Settings
-  scsi_controller = "virtio-scsi-single"
+  scsi_controller = "virtio-scsi-pci"
 
   disks {
     disk_size    = "64G"
-    format       = "raw"
-    storage_pool = "local-lvm"
-    #storage_pool_type = "lvm"
-    type = "scsi"
+    format       = "qcow2"
+    storage_pool = "storage"
+    type         = "virtio"
   }
 
   # VM CPU Settings
@@ -42,15 +39,14 @@ source "proxmox-iso" "nomad" {
 
   # VM Network Settings
   network_adapters {
-    model  = "virtio"
-    bridge = "vmbr0"
-    #vlan_tag = "2"
+    model    = "virtio"
+    bridge   = "vmbr0"
     firewall = "false" # default
   }
 
   # VM Cloud Init Settings
   cloud_init              = true
-  cloud_init_storage_pool = "local-lvm"
+  cloud_init_storage_pool = "storage"
 
   # Packer Boot Commands
   boot_command = [
@@ -175,13 +171,7 @@ build {
       "wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg",
       "echo \"deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/hashicorp.list",
       "sudo apt -y update && sudo apt -y install consul",
-
-
-
-      #"wget https://releases.hashicorp.com/consul/${var.consul_version}/consul_${var.consul_version}_linux_${var.arch}.zip",
-      #"unzip consul_${var.consul_version}_linux_${var.arch}.zip",
-      #"sudo mv consul /usr/local/bin/",
-      #"rm consul_${var.consul_version}_linux_${var.arch}.zip"
+      "sudo rm /etc/consul.d/consul.hcl",
     ]
     max_retries = 3
   }
@@ -208,13 +198,7 @@ build {
       "echo 'DOWNLOAD NOMAD'",
       "echo '=============================================='",
       "sudo apt update && sudo apt install nomad",
-
-
-
-      #"wget https://releases.hashicorp.com/nomad/${var.nomad_version}/nomad_${var.nomad_version}_linux_${var.arch}.zip",
-      #"unzip nomad_${var.nomad_version}_linux_${var.arch}.zip",
-      #"sudo mv nomad /usr/local/bin/",
-      #"rm nomad_${var.nomad_version}_linux_${var.arch}.zip"
+      "sudo rm /etc/nomad.d/nomad.hcl",
     ]
     max_retries = 3
   }

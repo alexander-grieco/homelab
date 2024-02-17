@@ -11,6 +11,6 @@ module "hashistack" {
   #consul_version               = "1.14.4"
   #consul_control_plane_version = "1.0.4"
   #acme                         = var.acme
-  #tls_organization             = var.tls_organization
+  tls_organization = var.tls_organization
   #domain                       = var.domain
 }
