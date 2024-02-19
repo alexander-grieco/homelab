@@ -5,11 +5,39 @@ resource "random_id" "nomad-gossip-key" {
   byte_length = 32
 }
 
+resource "remote_file" "nomad_service" {
+  count = var.server_count
+
+  depends_on = [
+    proxmox_vm_qemu.nomad-servers,
+    tls_self_signed_cert.nomad-ca,
+    tls_private_key.nomad-client,
+    tls_locally_signed_cert.nomad-client,
+  ]
+  conn {
+    host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
+    user        = "alex"
+    private_key = var.private_key_file_content
+    sudo        = true
+  }
+
+  content = templatefile("${path.module}/templates/nomad/nomad.service.tftpl", {
+    USER  = "nomad",
+    GROUP = "nomad",
+  })
+  path        = "/etc/systemd/system/nomad.service"
+  permissions = "0644"
+}
+
 resource "remote_file" "nomad_server" {
   count = var.server_count
 
   depends_on = [
-    proxmox_vm_qemu.nomad-servers
+    proxmox_vm_qemu.nomad-servers,
+    remote_file.nomad_service,
+    tls_self_signed_cert.nomad-ca,
+    tls_private_key.nomad-server,
+    tls_locally_signed_cert.nomad-server,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
@@ -30,52 +58,16 @@ resource "remote_file" "nomad_server" {
   })
   path        = "/etc/nomad.d/server.hcl"
   permissions = "0644"
-}
 
-resource "remote_file" "nomad_service" {
-  count = var.server_count
-
-  depends_on = [
-    proxmox_vm_qemu.nomad-servers,
-    #tls_self_signed_cert.nomad-ca,
-    #tls_private_key.nomad-server,
-    #tls_locally_signed_cert.nomad-server,
-  ]
-  conn {
-    host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
-    user        = "alex"
-    private_key = var.private_key_file_content
-    sudo        = true
-  }
-
-  content = templatefile("${path.module}/templates/nomad/nomad.service.tftpl", {
-    USER  = "nomad",
-    GROUP = "nomad",
-  })
-  path        = "/etc/systemd/system/nomad.service"
-  permissions = "0644"
-}
-
-resource "null_resource" "start-nomad" {
-  count = var.server_count
-
-  depends_on = [
-    remote_file.nomad_server,
-    remote_file.nomad_service,
-    tls_self_signed_cert.nomad-ca,
-    tls_private_key.nomad-server,
-    tls_locally_signed_cert.nomad-server,
-  ]
-
-  connection {
-    type        = "ssh"
-    host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
-    user        = "alex"
-    private_key = var.private_key_file_content
-    port        = "22"
-  }
 
   provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
     inline = [
       "sudo systemctl enable nomad",
       "sudo systemctl restart nomad",
@@ -86,12 +78,39 @@ resource "null_resource" "start-nomad" {
 ################################################
 # CLIENT CONFIG
 ################################################
+resource "remote_file" "nomad_client_service" {
+  count = var.client_count
+
+  depends_on = [
+    proxmox_vm_qemu.nomad-clients,
+    tls_self_signed_cert.nomad-ca,
+    tls_private_key.nomad-client,
+    tls_locally_signed_cert.nomad-client,
+  ]
+  conn {
+    host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
+    user        = "alex"
+    private_key = var.private_key_file_content
+    sudo        = true
+  }
+
+  content = templatefile("${path.module}/templates/nomad/nomad.service.tftpl", {
+    USER  = "root",
+    GROUP = "root",
+  })
+  path        = "/etc/systemd/system/nomad.service"
+  permissions = "0644"
+}
+
 resource "remote_file" "nomad_client" {
   count = var.client_count
 
   depends_on = [
     proxmox_vm_qemu.nomad-clients,
-    null_resource.start-nomad,
+    remote_file.nomad_client_service,
+    tls_self_signed_cert.nomad-ca,
+    tls_private_key.nomad-client,
+    tls_locally_signed_cert.nomad-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
@@ -111,54 +130,16 @@ resource "remote_file" "nomad_client" {
   })
   path        = "/etc/nomad.d/client.hcl"
   permissions = "0644"
-}
-
-resource "remote_file" "nomad_client_service" {
-  count = var.client_count
-
-  depends_on = [
-    proxmox_vm_qemu.nomad-clients,
-    #tls_self_signed_cert.nomad-ca,
-    #tls_private_key.nomad-client,
-    #tls_locally_signed_cert.nomad-client,
-  ]
-  conn {
-    host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
-    user        = "alex"
-    private_key = var.private_key_file_content
-    sudo        = true
-  }
-
-  content = templatefile("${path.module}/templates/nomad/nomad.service.tftpl", {
-    USER  = "root",
-    GROUP = "root",
-  })
-  path        = "/etc/systemd/system/nomad.service"
-  permissions = "0644"
-}
-
-resource "null_resource" "start-nomad-client" {
-  count = var.client_count
-
-  depends_on = [
-    remote_file.nomad_server,
-    remote_file.nomad_service,
-    tls_self_signed_cert.nomad-ca,
-    tls_private_key.nomad-client,
-    tls_locally_signed_cert.nomad-client,
-  ]
-
-  connection {
-    type        = "ssh"
-    host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
-    user        = "alex"
-    private_key = var.private_key_file_content
-    port        = "22"
-  }
 
   provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
     inline = [
-      "sudo rm /etc/nomad.d/nomad.hcl",
       "sudo systemctl enable nomad",
       "sudo systemctl restart nomad",
     ]
