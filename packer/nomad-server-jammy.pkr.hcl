@@ -11,7 +11,7 @@ source "proxmox-iso" "nomad" {
   node                 = "pve"
   vm_id                = "899"
   vm_name              = "ubuntu-server-jammy-nomad"
-  template_description = "Ubuntu Server 22.04 Test Image with Docker and Nomad pre-installed"
+  template_description = "Ubuntu Server 22.04 Image with Docker and Nomad pre-installed"
 
   # VM OS Settings
   iso_file         = "local:iso/Ubuntu_22.04.3_Server.iso"

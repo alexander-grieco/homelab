@@ -23,9 +23,9 @@ resource "remote_file" "nomad_server" {
     gossip_key    = random_id.nomad-gossip-key.b64_std,
     datacenter    = var.datacenter,
     server_number = count.index + 1,
-    server1_ip    = "${var.network}0"
-    server2_ip    = "${var.network}1"
-    server3_ip    = "${var.network}2"
+    server1_ip    = "${var.network}10"
+    server2_ip    = "${var.network}11"
+    server3_ip    = "${var.network}12"
     #domain            = var.domain
   })
   path        = "/etc/nomad.d/server.hcl"
@@ -104,9 +104,9 @@ resource "remote_file" "nomad_client" {
     client_ip     = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
     datacenter    = var.datacenter,
     client_number = count.index + 1,
-    server1_ip    = "${var.network}0"
-    server2_ip    = "${var.network}1"
-    server3_ip    = "${var.network}2"
+    server1_ip    = "${var.network}10"
+    server2_ip    = "${var.network}11"
+    server3_ip    = "${var.network}12"
     #domain            = var.domain
   })
   path        = "/etc/nomad.d/client.hcl"

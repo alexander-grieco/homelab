@@ -24,6 +24,7 @@ autoinstall:
     users:
       - name: root
         lock-passwd: false
+        shell: /bin/bash
         ssh_authorized_keys:
           - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJV+H0xdhLR1aYN5cbzHRHytek05hDXRb4vqlgAba4Dl github
       - name: alex

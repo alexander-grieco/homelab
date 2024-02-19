@@ -31,14 +31,15 @@ resource "tls_self_signed_cert" "nomad-ca" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[0].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/nomad-ca.pem",
-      "chmod 0644 /etc/certs/nomad/nomad-agent-ca.pem",
+      "sudo chmod 0644 /etc/certs/nomad/nomad-ca.pem",
     ]
   }
 
@@ -46,14 +47,15 @@ resource "tls_self_signed_cert" "nomad-ca" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[1].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/nomad-ca.pem",
-      "chmod 0644 /etc/certs/nomad/nomad-agent-ca.pem",
+      "sudo chmod 0644 /etc/certs/nomad/nomad-ca.pem",
     ]
   }
 
@@ -61,14 +63,63 @@ resource "tls_self_signed_cert" "nomad-ca" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[2].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/nomad-ca.pem",
-      "chmod 0644 /etc/certs/nomad/nomad-agent-ca.pem",
+      "sudo chmod 0644 /etc/certs/nomad/nomad-ca.pem",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = proxmox_vm_qemu.nomad-clients[0].ssh_host
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.cert_pem}' > /etc/certs/nomad/nomad-ca.pem",
+      "sudo chmod 0644 /etc/certs/nomad/nomad-ca.pem",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = proxmox_vm_qemu.nomad-clients[1].ssh_host
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.cert_pem}' > /etc/certs/nomad/nomad-ca.pem",
+      "sudo chmod 0644 /etc/certs/nomad/nomad-ca.pem",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = proxmox_vm_qemu.nomad-clients[2].ssh_host
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.cert_pem}' > /etc/certs/nomad/nomad-ca.pem",
+      "sudo chmod 0644 /etc/certs/nomad/nomad-ca.pem",
     ]
   }
 
@@ -148,14 +199,15 @@ resource "tls_private_key" "nomad-server" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[0].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.private_key_pem}' > /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
     ]
   }
 
@@ -163,14 +215,15 @@ resource "tls_private_key" "nomad-server" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[1].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.private_key_pem}' > /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
     ]
   }
 
@@ -178,14 +231,15 @@ resource "tls_private_key" "nomad-server" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[2].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.private_key_pem}' > /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global-key.pem",
     ]
   }
 }
@@ -231,14 +285,15 @@ resource "tls_locally_signed_cert" "nomad-server" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[0].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/${var.datacenter}-server-global.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global.pem",
     ]
   }
 
@@ -246,14 +301,15 @@ resource "tls_locally_signed_cert" "nomad-server" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[1].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/${var.datacenter}-server-global.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global.pem",
     ]
   }
 
@@ -261,14 +317,15 @@ resource "tls_locally_signed_cert" "nomad-server" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-servers[2].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/${var.datacenter}-server-global.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-server-global.pem",
     ]
   }
 }
@@ -287,14 +344,15 @@ resource "tls_private_key" "nomad-client" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-clients[0].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.private_key_pem}' > /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
     ]
   }
 
@@ -302,14 +360,15 @@ resource "tls_private_key" "nomad-client" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-clients[1].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.private_key_pem}' > /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
     ]
   }
 
@@ -317,14 +376,15 @@ resource "tls_private_key" "nomad-client" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-clients[2].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.private_key_pem}' > /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global-key.pem",
     ]
   }
 }
@@ -370,14 +430,15 @@ resource "tls_locally_signed_cert" "nomad-client" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-clients[0].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/${var.datacenter}-client-global.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global.pem",
     ]
   }
 
@@ -385,14 +446,15 @@ resource "tls_locally_signed_cert" "nomad-client" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-clients[1].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/${var.datacenter}-client-global.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global.pem",
     ]
   }
 
@@ -400,14 +462,15 @@ resource "tls_locally_signed_cert" "nomad-client" {
     connection {
       type        = "ssh"
       host        = proxmox_vm_qemu.nomad-clients[2].ssh_host
-      user        = "root"
+      user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
     }
     inline = [
-      "mkdir -p /etc/certs/nomad/",
+      "sudo mkdir -p /etc/certs/nomad/",
+      "sudo chown -R alex:alex /etc/certs/",
       "echo '${self.cert_pem}' > /etc/certs/nomad/${var.datacenter}-client-global.pem",
-      "chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global.pem",
+      "sudo chmod 0644 /etc/certs/nomad/${var.datacenter}-client-global.pem",
     ]
   }
 }

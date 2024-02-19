@@ -23,12 +23,12 @@ ports {
 
 # TLS configurations
 tls {
-  #http = true
-  #rpc  = true
+  http = true
+  rpc  = true
 
-  #ca_file   = "/etc/certs/ca.crt"
-  #cert_file = "/etc/certs/nomad.crt"
-  #key_file  = "/etc/certs/nomad.key"
+  ca_file   = "/etc/certs/nomad/nomad-ca.pem"
+  cert_file = "/etc/certs/nomad/${datacenter}-client-global.pem"
+  key_file  = "/etc/certs/nomad/${datacenter}-client-global-key.pem"
 }
 
 # Specify the datacenter the agent is a member of

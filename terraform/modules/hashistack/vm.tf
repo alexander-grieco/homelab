@@ -6,25 +6,25 @@ resource "proxmox_vm_qemu" "nomad-servers" {
   vmid        = parseint("10${count.index}", 10)
   target_node = "pve"
 
-  onboot     = true
+  onboot = true
 
-  clone      = "ubuntu-server-jammy-nomad2"
+  clone = "ubuntu-server-jammy-nomad"
 
-  agent      = 1 # Need this
+  agent = 1 # Need this
 
-  cpu        = "host"
-  cores      = 2
-  sockets    = 1
+  cpu     = "host"
+  cores   = 2
+  sockets = 1
 
-  memory     = 4096
+  memory = 4096
 
   network {
-    bridge   = "vmbr0"
-    model    = "virtio"
-    tag      = var.vlan
+    bridge = "vmbr0"
+    model  = "virtio"
+    tag    = var.vlan
   }
 
-  os_type    = "cloud-init"
+  os_type = "cloud-init"
 
   #disk {
   #  storage = "storage"
@@ -41,7 +41,7 @@ resource "proxmox_vm_qemu" "nomad-servers" {
   EOF
 
   lifecycle {
-    ignore_changes = [desc, tags, network, disk, cicustom]
+    ignore_changes = [desc, tags, network, disk, cicustom, qemu_os]
   }
 }
 
@@ -58,7 +58,7 @@ resource "proxmox_vm_qemu" "nomad-clients" {
 
   agent      = 1 # Need this
   full_clone = true
-  clone      = "ubuntu-server-jammy-nomad2"
+  clone      = "ubuntu-server-jammy-nomad"
   cpu        = "host"
   cores      = 2
   sockets    = 1
@@ -66,7 +66,7 @@ resource "proxmox_vm_qemu" "nomad-clients" {
   onboot     = true
   os_type    = "cloud-init"
   qemu_os    = "l26"
-  scsihw = "virtio-scsi-single"
+  scsihw     = "virtio-scsi-single"
 
   network {
     bridge   = "vmbr0"
@@ -90,6 +90,6 @@ resource "proxmox_vm_qemu" "nomad-clients" {
   EOF
 
   lifecycle {
-    ignore_changes = [desc, tags, network, disk, cicustom]
+    ignore_changes = [desc, tags, network, disk, cicustom, qemu_os]
   }
 }
