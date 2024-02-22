@@ -37,3 +37,6 @@ terraform.rc
 
 # Packer
 *auto.pkrvars.hcl*
+
+# Other
+*.token
