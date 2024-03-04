@@ -72,15 +72,14 @@ resource "proxmox_vm_qemu" "nomad-clients" {
     bridge   = "vmbr0"
     model    = "virtio"
     tag      = var.vlan
-    firewall = false
   }
 
-  disk {
-    storage = "storage"
-    type    = "virtio"
-    #type    = "scsi"
-    size = "64G"
-  }
+  # disk {
+  #   storage = "nomad-storage"
+  #   type    = "virtio"
+  #   #type    = "scsi"
+  #   size = "64G"
+  # }
 
   ipconfig0 = "gw=${var.network}1,ip=${var.network}2${count.index}/32"
 

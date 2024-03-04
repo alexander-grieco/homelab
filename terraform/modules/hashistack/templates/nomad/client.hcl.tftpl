@@ -41,6 +41,10 @@ log_file  = "/var/log/nomad.log"
 # Client configuration
 client {
   enabled = true
+  options {
+    "driver.raw_exec.enable"    = "1"
+    "docker.privileged.enabled" = "true"
+  }
 
   server_join {
     retry_join = ["${server1_ip}", "${server2_ip}", "${server3_ip}"]
@@ -65,3 +69,15 @@ acl {
 #  address          = "https://vault.example.com:8200"
 #  create_from_role = "nomad-cluster"
 #}
+
+plugin "docker" {
+  config {
+    allow_privileged = true
+    volumes {
+      enabled = true
+    }
+    gc {
+      image_delay = "10m"
+    }
+  }
+}

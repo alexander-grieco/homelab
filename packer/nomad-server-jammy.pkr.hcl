@@ -27,7 +27,7 @@ source "proxmox-iso" "nomad" {
   disks {
     disk_size    = "64G"
     format       = "qcow2"
-    storage_pool = "storage"
+    storage_pool = "nomad-storage"
     type         = "virtio"
   }
 
@@ -46,7 +46,7 @@ source "proxmox-iso" "nomad" {
 
   # VM Cloud Init Settings
   cloud_init              = true
-  cloud_init_storage_pool = "storage"
+  cloud_init_storage_pool = "nomad-storage"
 
   # Packer Boot Commands
   boot_command = [
@@ -64,7 +64,7 @@ source "proxmox-iso" "nomad" {
   # PACKER Autoinstall Settings
   http_directory = "http"
 
-  ssh_username         = "alex"
+  ssh_username         = "root"
   ssh_private_key_file = "~/.ssh/github_ed25519"
   ssh_timeout          = "30m"
 }
@@ -79,7 +79,7 @@ build {
   provisioner "shell" {
     inline = [
       "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done",
-      "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
+      "rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
     ]
   }
 
@@ -89,40 +89,41 @@ build {
     destination = "/tmp/397-pve.cfg"
   }
 
+  # Client CNI networking configuration
+  # FIX ME
+  provisioner "file" {
+    source      = "files/nomad/bridge.conf"
+    destination = "/etc/sysctl.d/bridge.conf"
+  }
+
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #3
   provisioner "shell" {
-    inline = ["sudo cp /tmp/397-pve.cfg /etc/cloud/cloud.cfg.d/397-pve.cfg"]
+    inline = ["cp /tmp/397-pve.cfg /etc/cloud/cloud.cfg.d/397-pve.cfg"]
   }
 
   provisioner "shell" {
     inline = [
       "echo set debconf to Noninteractive",
-    "echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections"]
+    "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections"]
   }
 
   # Provisioning the VM Template with Docker Installation #4
   provisioner "shell" {
     inline = [
-      #"sudo apt-get install -y ca-certificates curl gnupg lsb-release",
-      #"curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg",
-      #"echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
-      #"sudo apt-get -y update",
-      #"sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin",
-      #"sudo apt install -y docker-ce",
       "echo '=============================================='",
       "echo 'INSTALL DOCKER'",
       "echo '=============================================='",
-      "sudo apt-get -y update",
-      "sudo apt-get install -y ca-certificates curl gnupg",
-      "sudo install -m 0755 -d /etc/apt/keyrings",
-      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg",
-      "sudo chmod a+r /etc/apt/keyrings/docker.gpg",
+      "apt-get -y update",
+      "apt-get install -y ca-certificates curl gnupg",
+      "install -m 0755 -d /etc/apt/keyrings",
+      "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg",
+      "chmod a+r /etc/apt/keyrings/docker.gpg",
 
       # Add the repository to Apt sources:
-      "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null",
-      "sudo apt-get -y update",
-      "sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
-      "sudo usermod -aG docker alex",
+      "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable\" | tee /etc/apt/sources.list.d/docker.list > /dev/null",
+      "apt-get -y update",
+      "apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
+      "usermod -aG docker alex",
     ]
   }
 
@@ -133,15 +134,15 @@ build {
       "echo '=============================================='",
       "echo 'APT INSTALL PACKAGES & UPDATES'",
       "echo '=============================================='",
-      "sudo apt-get update",
-      "sudo apt-get -y install --no-install-recommends apt-utils git unzip wget",
-      "sudo apt-get -y upgrade",
+      "apt-get update",
+      "apt-get -y install --no-install-recommends apt-utils git unzip wget",
+      "apt-get -y upgrade",
       #"echo 'DIST UPGRADE'",
-      #"sudo apt-get -y dist-upgrade",
-      "sudo apt-get -y autoremove",
+      #"apt-get -y dist-upgrade",
+      "apt-get -y autoremove",
 
       #"echo 'Rebooting...'",
-      #"sudo reboot"
+      #"reboot"
     ]
   }
 
@@ -150,16 +151,16 @@ build {
       "echo '=============================================='",
       "echo 'CREATE CONSUL USER & GROUP'",
       "echo '=============================================='",
-      "sudo addgroup --system consul",
-      "sudo adduser --system --ingroup consul consul",
-      "sudo usermod -aG docker consul",
-      "sudo mkdir -p /etc/consul.d/ssl",
-      "sudo mkdir -p /opt/consul",
-      "sudo mkdir -p /var/log/consul",
-      "sudo chown -R consul:consul /etc/consul.d",
-      "sudo chown -R consul:consul /opt/consul",
-      "sudo chown -R consul:consul /var/log/consul",
-      "sudo chmod 750 /etc/consul.d/ssl",
+      "addgroup --system consul",
+      "adduser --system --ingroup consul consul",
+      "usermod -aG docker consul",
+      "mkdir -p /etc/consul.d/ssl",
+      "mkdir -p /opt/consul",
+      "mkdir -p /var/log/consul",
+      "chown -R consul:consul /etc/consul.d",
+      "chown -R consul:consul /opt/consul",
+      "chown -R consul:consul /var/log/consul",
+      "chmod 750 /etc/consul.d/ssl",
     ]
   }
 
@@ -168,10 +169,10 @@ build {
       "echo '=============================================='",
       "echo 'DOWNLOAD CONSUL'",
       "echo '=============================================='",
-      "wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg",
-      "echo \"deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/hashicorp.list",
-      "sudo apt -y update && sudo apt -y install consul",
-      "sudo rm /etc/consul.d/consul.hcl",
+      "wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg",
+      "echo \"deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main\" | tee /etc/apt/sources.list.d/hashicorp.list",
+      "apt -y update && apt -y install consul",
+      "rm /etc/consul.d/consul.hcl",
     ]
     max_retries = 3
   }
@@ -181,14 +182,14 @@ build {
       "echo '=============================================='",
       "echo 'CREATE NOMAD USER & GROUP'",
       "echo '=============================================='",
-      "sudo addgroup --system nomad",
-      "sudo adduser --system --ingroup nomad nomad",
-      "sudo usermod -aG docker nomad",
-      "sudo mkdir -p /etc/nomad.d/ssl",
-      "sudo mkdir -p /opt/nomad",
-      "sudo chown -R nomad:nomad /etc/nomad.d",
-      "sudo chown -R nomad:nomad /opt/nomad",
-      "sudo chmod 750 /etc/nomad.d/ssl",
+      "addgroup --system nomad",
+      "adduser --system --ingroup nomad nomad",
+      "usermod -aG docker nomad",
+      "mkdir -p /etc/nomad.d/ssl",
+      "mkdir -p /opt/nomad",
+      "chown -R nomad:nomad /etc/nomad.d",
+      "chown -R nomad:nomad /opt/nomad",
+      "chmod 750 /etc/nomad.d/ssl",
     ]
   }
 
@@ -197,8 +198,8 @@ build {
       "echo '=============================================='",
       "echo 'DOWNLOAD NOMAD'",
       "echo '=============================================='",
-      "sudo apt update && sudo apt install nomad",
-      "sudo rm /etc/nomad.d/nomad.hcl",
+      "apt update && apt install nomad",
+      "rm /etc/nomad.d/nomad.hcl",
     ]
     max_retries = 3
   }
@@ -216,13 +217,24 @@ build {
 
   provisioner "shell" {
     inline = [
-      "sudo rm /etc/ssh/ssh_host_*",
-      "sudo truncate -s 0 /etc/machine-id",
-      "sudo apt -y autoremove --purge",
-      "sudo apt -y clean",
-      "sudo apt -y autoclean",
-      "sudo cloud-init clean",
-      "sudo sync"
+      "echo '=============================================='",
+      "echo 'INSTALLING NOMAD CNI PACKAGES'",
+      "echo '=============================================='",
+      "curl -L -o cni-plugins.tgz \"https://github.com/containernetworking/plugins/releases/download/v1.0.0/cni-plugins-linux-$( [ $(uname -m) = aarch64 ] && echo arm64 || echo amd64)\"-v1.0.0.tgz",
+      "mkdir -p /opt/cni/bin",
+      "tar -C /opt/cni/bin -xzf cni-plugins.tgz",
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "rm /etc/ssh/ssh_host_*",
+      "truncate -s 0 /etc/machine-id",
+      "apt -y autoremove --purge",
+      "apt -y clean",
+      "apt -y autoclean",
+      "cloud-init clean",
+      "sync"
     ]
   }
 }
