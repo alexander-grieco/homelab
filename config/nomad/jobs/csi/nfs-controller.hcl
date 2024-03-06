@@ -13,9 +13,10 @@ job "plugin-nfs-controller" {
         ]
       }
       csi_plugin {
-        id        = "nfsofficial"
-        type      = "controller"
-        mount_dir = "/csi"
+        id             = "nfsofficial"
+        type           = "controller"
+        mount_dir      = "/csi"
+        health_timeout = "5m"
       }
       resources {
         memory = 32

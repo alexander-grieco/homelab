@@ -69,9 +69,9 @@ resource "proxmox_vm_qemu" "nomad-clients" {
   scsihw     = "virtio-scsi-single"
 
   network {
-    bridge   = "vmbr0"
-    model    = "virtio"
-    tag      = var.vlan
+    bridge = "vmbr0"
+    model  = "virtio"
+    tag    = var.vlan
   }
 
   # disk {

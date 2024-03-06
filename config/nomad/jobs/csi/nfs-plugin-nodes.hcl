@@ -1,8 +1,6 @@
 job "plugin-nfs-nodes" {
   datacenters = ["homelab"]
-  # you can run node plugins as service jobs as well, but this ensures
-  # that all nodes in the DC have a copy.
-  type = "system"
+  type        = "system"
   group "nodes" {
     task "plugin" {
       driver = "docker"
@@ -19,9 +17,10 @@ job "plugin-nfs-nodes" {
         privileged = true
       }
       csi_plugin {
-        id        = "nfsofficial"
-        type      = "node"
-        mount_dir = "/csi"
+        id             = "nfsofficial"
+        type           = "node"
+        mount_dir      = "/csi"
+        health_timeout = "5m"
       }
       resources {
         memory = 10
