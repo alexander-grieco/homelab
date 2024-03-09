@@ -14,3 +14,8 @@ module "hashistack" {
   tls_organization = var.tls_organization
   #domain                       = var.domain
 }
+
+output "consul_bootstrap_token" {
+  description = "The Consul bootstrap acl token"
+  value       = module.hashistack.consul_bootstrap_token
+}

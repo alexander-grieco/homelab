@@ -57,7 +57,16 @@ acl {
 }
 
 # [optional] Specifies configuration for connecting to Consul
-#consul {
+consul {
+  ssl        = ${consul_ssl}
+  verify_ssl = ${consul_ssl}
+  address    = "${consul_addr}"
+  #ca_file    = "/etc/consul.d/consul-ca.pem"
+  #cert_file  = "/etc/consul.d/server.pem"
+  #key_file   = "/etc/consul.d/server-key.pem"
+  token      = "${consul_token}"
+}
+# consul {
 #  address                = "consul.example.com:8500"
 #  ssl                    = true
 #  verify_server_hostname = true

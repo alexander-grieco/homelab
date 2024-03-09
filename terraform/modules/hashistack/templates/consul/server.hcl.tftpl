@@ -2,16 +2,20 @@ bind_addr = "${bind_addr}"
 encrypt = "${consul_encryption}"
 ## ACL configuration
 acl = {
-  enabled = false
-  #default_policy = "deny"
+  enabled = true
+  default_policy = "deny"
   #enable_token_persistence = true
   #enable_token_replication = true
   #down_policy = "extend-cache"
+  enable_token_persistence = true
+  tokens {
+    master = "${consul_bootstrap_token}"
+  }
 }
 # agent-server-secure.hcl
 
 # Data Persistence
-data_dir = "/etc/consul/data"
+data_dir = "/opt/consul"
 
 # Logging
 log_level = "DEBUG"
@@ -38,8 +42,11 @@ ports {
   dns   = 8600
 }
 
+# Retry join
+retry_join = ["${server1_ip}", "${server2_ip}", "${server3_ip}"]
+
 # DNS recursors
-recursors = ["1.1.1.1"]
+recursors = ["10.2.0.1", "1.1.1.1"]
 
 # Disable script checks
 enable_script_checks = false
@@ -50,10 +57,9 @@ enable_local_script_checks = true
 
 ## Server specific configuration for homelab
 server = true
-bootstrap_expect = 1
+bootstrap_expect = 3
 datacenter = "${consul_datacenter}"
-domain = "${domain}"
-node_name = "consul"
+node_name = "consul_server_${server_number}"
 
 client_addr = "127.0.0.1"
 
@@ -80,25 +86,25 @@ ui_config {
 # }
 
 ## TLS Encryption (requires cert files to be present on the server nodes)
-tls {
-  defaults {
-    ca_file   = "/etc/consul/config/consul-agent-ca.pem"
-    cert_file = "/etc/consul/config/${consul_datacenter}-server-${domain}-0.pem"
-    key_file  = "/etc/consul/config/${consul_datacenter}-server-${domain}-0-key.pem"
-    verify_incoming        = true
-    verify_outgoing        = true
-  }
-  https {
-    verify_incoming = false
-  }
-  grpc {
-    verify_incoming = false
-  }
-  internal_rpc {
-    verify_server_hostname = true
-  }
-}
+#tls {
+#  defaults {
+#    ca_file   = "/etc/consul/config/consul-agent-ca.pem"
+#    cert_file = "/etc/consul/config/-server-global-0.pem"
+#    key_file  = "/etc/consul/config/-server--0-key.pem"
+#    verify_incoming        = true
+#    verify_outgoing        = true
+#  }
+#  https {
+#    verify_incoming = false
+#  }
+#  grpc {
+#    verify_incoming = false
+#  }
+#  internal_rpc {
+#    verify_server_hostname = true
+#  }
+#}
 
-auto_encrypt {
-  allow_tls = true
-}
+#auto_encrypt {
+#  allow_tls = true
+#}

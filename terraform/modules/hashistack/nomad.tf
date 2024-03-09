@@ -54,6 +54,9 @@ resource "remote_file" "nomad_server" {
     server1_ip    = "${var.network}10"
     server2_ip    = "${var.network}11"
     server3_ip    = "${var.network}12"
+    consul_ssl    = false
+    consul_addr   = "127.0.0.1:8500"
+    consul_token  = random_uuid.consul_bootstrap_token.result
     #domain            = var.domain
   })
   path        = "/etc/nomad.d/server.hcl"
@@ -127,6 +130,9 @@ resource "remote_file" "nomad_client" {
     server2_ip    = "${var.network}11"
     server3_ip    = "${var.network}12"
     #domain            = var.domain
+    consul_ssl   = false
+    consul_addr  = "127.0.0.1:8500"
+    consul_token = random_uuid.consul_bootstrap_token.result
   })
   path        = "/etc/nomad.d/client.hcl"
   permissions = "0644"
