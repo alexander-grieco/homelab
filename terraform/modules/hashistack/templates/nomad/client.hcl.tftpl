@@ -61,9 +61,9 @@ consul {
   ssl        = ${consul_ssl}
   verify_ssl = ${consul_ssl}
   address    = "${consul_addr}"
-  #ca_file    = "/etc/consul.d/consul-ca.pem"
-  #cert_file  = "/etc/consul.d/server.pem"
-  #key_file   = "/etc/consul.d/server-key.pem"
+  ca_file   = "/etc/certs/consul/consul-ca.pem"
+  cert_file = "/etc/certs/consul/${datacenter}-client-global.pem"
+  key_file  = "/etc/certs/consul/${datacenter}-client-global-key.pem"
   token      = "${consul_token}"
 }
 

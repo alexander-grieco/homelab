@@ -42,9 +42,21 @@ encrypt_verify_outgoing = true
 retry_join = ["${server1_ip}", "${server2_ip}", "${server3_ip}"]
 ui = true
 
-verify_incoming = false
-verify_outgoing = false
-verify_server_hostname = false
-#ca_file = "/etc/consul.d/consul-ca.pem"
-#cert_file = "/etc/consul.d/client.pem"
-#key_file = "/etc/consul.d/client-key.pem"
+tls {
+  defaults {
+    ca_file   = "/etc/certs/consul/consul-ca.pem"
+    cert_file = "/etc/certs/consul/${consul_datacenter}-client-global.pem"
+    key_file  = "/etc/certs/consul/${consul_datacenter}-client-global-key.pem"
+    verify_incoming        = true
+    verify_outgoing        = true
+  }
+  https {
+    verify_incoming = false
+  }
+  grpc {
+    verify_incoming = false
+  }
+  internal_rpc {
+    verify_server_hostname = true
+  }
+}

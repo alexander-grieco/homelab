@@ -67,44 +67,27 @@ client_addr = "127.0.0.1"
 ui_config {
   enabled = true
 }
-## TLS Encryption (requires cert files to be present on the server nodes)
-# tls {
-#   defaults {
-#     ca_file   = "/etc/consul/config/consul-agent-ca.pem"
-#     cert_file = "/etc/consul/config/homelab-server-alexgrieco.io-0.pem"
-#     key_file  = "/etc/consul/config/homelab-server-alexgrieco.io-0-key.pem"
 
-#     verify_outgoing        = true
-#     verify_incoming        = true
-#   }
-#   https {
-#     verify_incoming        = false
-#   }
-#   internal_rpc {
-#     verify_server_hostname = true
-#   }
-# }
+# TLS Encryption (requires cert files to be present on the server nodes)
+tls {
+  defaults {
+    ca_file   = "/etc/certs/consul/consul-ca.pem"
+    cert_file = "/etc/certs/consul/${consul_datacenter}-server-global.pem"
+    key_file  = "/etc/certs/consul/${consul_datacenter}-server-global-key.pem"
+    verify_incoming        = true
+    verify_outgoing        = true
+  }
+  https {
+    verify_incoming = false
+  }
+  grpc {
+    verify_incoming = false
+  }
+  internal_rpc {
+    verify_server_hostname = true
+  }
+}
 
-## TLS Encryption (requires cert files to be present on the server nodes)
-#tls {
-#  defaults {
-#    ca_file   = "/etc/consul/config/consul-agent-ca.pem"
-#    cert_file = "/etc/consul/config/-server-global-0.pem"
-#    key_file  = "/etc/consul/config/-server--0-key.pem"
-#    verify_incoming        = true
-#    verify_outgoing        = true
-#  }
-#  https {
-#    verify_incoming = false
-#  }
-#  grpc {
-#    verify_incoming = false
-#  }
-#  internal_rpc {
-#    verify_server_hostname = true
-#  }
-#}
-
-#auto_encrypt {
-#  allow_tls = true
-#}
+auto_encrypt {
+  allow_tls = true
+}
