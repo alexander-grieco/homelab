@@ -35,7 +35,7 @@ source "proxmox-iso" "nomad" {
   cores = "2"
 
   # VM Memory settings
-  memory = "4096"
+  memory = "8192"
 
   # VM Network Settings
   network_adapters {
@@ -180,6 +180,35 @@ build {
   provisioner "shell" {
     inline = [
       "echo '=============================================='",
+      "echo 'CREATE VAULT USER & GROUP'",
+      "echo '=============================================='",
+      "addgroup --system vault",
+      "adduser --system --ingroup vault vault",
+      "usermod -aG docker vault",
+      "mkdir -p /etc/vault.d/ssl",
+      "mkdir -p /opt/vault",
+      "mkdir -p /var/log/vault",
+      "chown -R vault:vault /etc/vault.d",
+      "chown -R vault:vault /opt/vault",
+      "chown -R vault:vault /var/log/vault",
+      "chmod 750 /etc/vault.d/ssl",
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo '=============================================='",
+      "echo 'DOWNLOAD VAULT'",
+      "echo '=============================================='",
+      "apt -y update && apt -y install vault",
+      "rm /etc/vault.d/vault.hcl",
+    ]
+    max_retries = 3
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo '=============================================='",
       "echo 'CREATE NOMAD USER & GROUP'",
       "echo '=============================================='",
       "addgroup --system nomad",
@@ -198,7 +227,7 @@ build {
       "echo '=============================================='",
       "echo 'DOWNLOAD NOMAD'",
       "echo '=============================================='",
-      "apt update && apt install nomad",
+      "apt -y update && apt -y install nomad",
       "rm /etc/nomad.d/nomad.hcl",
     ]
     max_retries = 3

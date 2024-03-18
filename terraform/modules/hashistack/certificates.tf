@@ -21,11 +21,9 @@ resource "tls_self_signed_cert" "nomad-ca" {
   }
 
   allowed_uses = [
-    "cert_signing",
-    "digital_signature",
-    "key_encipherment",
+    "client_auth", 
+    "server_auth", 
   ]
-
 
   provisioner "remote-exec" {
     connection {
@@ -176,8 +174,8 @@ resource "tls_locally_signed_cert" "nomad-cli" {
   validity_period_hours = 87600
 
   allowed_uses = [
-    "digital_signature",
-    "key_encipherment",
+    "client_auth", 
+    "server_auth", 
   ]
 
   provisioner "local-exec" {
@@ -276,10 +274,9 @@ resource "tls_locally_signed_cert" "nomad-server" {
   validity_period_hours = 87600
 
   allowed_uses = [
-    "server_auth",
-    "client_auth",
+    "client_auth", 
+    "server_auth", 
   ]
-
 
   provisioner "remote-exec" {
     connection {
@@ -421,10 +418,9 @@ resource "tls_locally_signed_cert" "nomad-client" {
   validity_period_hours = 87600
 
   allowed_uses = [
-    "client_auth",
-    "client_auth",
+    "client_auth", 
+    "server_auth", 
   ]
-
 
   provisioner "remote-exec" {
     connection {

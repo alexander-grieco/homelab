@@ -123,13 +123,14 @@ resource "remote_file" "consul_client" {
   }
 
   content = templatefile("${path.module}/templates/consul/client.hcl.tftpl", {
-    bind_addr             = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
-    consul_datacenter     = var.datacenter,
-    client_number         = count.index + 1,
-    server1_ip            = "${var.network}10"
-    server2_ip            = "${var.network}11"
-    server3_ip            = "${var.network}12"
-    consul_encryption_key = random_id.consul-gossip-key.b64_std
+    bind_addr              = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
+    consul_datacenter      = var.datacenter,
+    client_number          = count.index + 1,
+    server1_ip             = "${var.network}10"
+    server2_ip             = "${var.network}11"
+    server3_ip             = "${var.network}12"
+    consul_encryption_key  = random_id.consul-gossip-key.b64_std
+    consul_bootstrap_token = random_uuid.consul_bootstrap_token.result
     #domain            = var.domain
   })
   path        = "/etc/consul.d/client.hcl"
