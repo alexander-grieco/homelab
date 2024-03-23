@@ -17,8 +17,8 @@ resource "tls_self_signed_cert" "cert-ca" {
   }
 
   allowed_uses = [
-    "client_auth", 
-    "server_auth", 
+    "client_auth",
+    "server_auth",
   ]
 
   provisioner "remote-exec" {
@@ -138,7 +138,7 @@ resource "tls_cert_request" "cert-cli" {
   private_key_pem = tls_private_key.cert-cli.private_key_pem
 
   ip_addresses = concat(
-    ["127.0.0.1"], 
+    ["127.0.0.1"],
     var.server_ssh_hosts
   )
 
@@ -163,8 +163,8 @@ resource "tls_locally_signed_cert" "cert-cli" {
   validity_period_hours = 87600
 
   allowed_uses = [
-    "client_auth", 
-    "server_auth", 
+    "client_auth",
+    "server_auth",
   ]
 
   provisioner "local-exec" {
@@ -257,8 +257,8 @@ resource "tls_locally_signed_cert" "cert-server" {
   validity_period_hours = 87600
 
   allowed_uses = [
-    "client_auth", 
-    "server_auth", 
+    "client_auth",
+    "server_auth",
   ]
 
   provisioner "remote-exec" {
@@ -370,7 +370,7 @@ resource "tls_cert_request" "cert-client" {
   private_key_pem = tls_private_key.cert-client.private_key_pem
 
   ip_addresses = concat(
-    ["127.0.0.1"], 
+    ["127.0.0.1"],
     var.client_ssh_hosts
   )
 
@@ -395,8 +395,8 @@ resource "tls_locally_signed_cert" "cert-client" {
   validity_period_hours = 87600
 
   allowed_uses = [
-    "client_auth", 
-    "server_auth", 
+    "client_auth",
+    "server_auth",
   ]
 
   provisioner "remote-exec" {
