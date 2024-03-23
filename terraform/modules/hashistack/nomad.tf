@@ -11,9 +11,6 @@ resource "remote_file" "nomad_service" {
   depends_on = [
     proxmox_vm_qemu.nomad-servers,
     module.certificates,
-    # tls_self_signed_cert.nomad-ca,
-    # tls_private_key.nomad-client,
-    # tls_locally_signed_cert.nomad-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
@@ -37,9 +34,6 @@ resource "remote_file" "nomad_server" {
     proxmox_vm_qemu.nomad-servers,
     remote_file.nomad_service,
     module.certificates,
-    # tls_self_signed_cert.nomad-ca,
-    # tls_private_key.nomad-server,
-    # tls_locally_signed_cert.nomad-server,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
@@ -59,7 +53,6 @@ resource "remote_file" "nomad_server" {
     consul_ssl    = true
     consul_addr   = "127.0.0.1:8501"
     consul_token  = random_uuid.consul_bootstrap_token.result
-    #domain            = var.domain
   })
   path        = "/etc/nomad.d/server.hcl"
   permissions = "0644"
@@ -89,9 +82,6 @@ resource "remote_file" "nomad_client_service" {
   depends_on = [
     proxmox_vm_qemu.nomad-clients,
     module.certificates,
-    # tls_self_signed_cert.nomad-ca,
-    # tls_private_key.nomad-client,
-    # tls_locally_signed_cert.nomad-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
@@ -115,9 +105,6 @@ resource "remote_file" "nomad_client" {
     proxmox_vm_qemu.nomad-clients,
     remote_file.nomad_client_service,
     module.certificates,
-    # tls_self_signed_cert.nomad-ca,
-    # tls_private_key.nomad-client,
-    # tls_locally_signed_cert.nomad-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
@@ -133,10 +120,9 @@ resource "remote_file" "nomad_client" {
     server1_ip    = "${var.network}10"
     server2_ip    = "${var.network}11"
     server3_ip    = "${var.network}12"
-    #domain            = var.domain
-    consul_ssl   = true
-    consul_addr  = "127.0.0.1:8501"
-    consul_token = random_uuid.consul_bootstrap_token.result
+    consul_ssl    = true
+    consul_addr   = "127.0.0.1:8501"
+    consul_token  = random_uuid.consul_bootstrap_token.result
   })
   path        = "/etc/nomad.d/client.hcl"
   permissions = "0644"

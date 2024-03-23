@@ -1,4 +1,4 @@
-// nomad CA
+// CA
 resource "tls_private_key" "cert-ca" {
   algorithm = "RSA"
   rsa_bits  = "2048"
@@ -123,7 +123,7 @@ resource "tls_self_signed_cert" "cert-ca" {
 }
 
 
-// nomad CLI
+// CLI
 resource "tls_private_key" "cert-cli" {
   algorithm = "RSA"
   rsa_bits  = "2048"
@@ -172,7 +172,7 @@ resource "tls_locally_signed_cert" "cert-cli" {
   }
 }
 
-// nomad SERVER
+// SERVER
 resource "tls_private_key" "cert-server" {
   algorithm = "RSA"
   rsa_bits  = "2048"
@@ -228,7 +228,6 @@ resource "tls_private_key" "cert-server" {
 }
 
 resource "tls_cert_request" "cert-server" {
-  #key_algorithm   = tls_private_key.nomad-server.algorithm
   private_key_pem = tls_private_key.cert-server.private_key_pem
 
   ip_addresses = concat(
@@ -250,7 +249,6 @@ resource "tls_cert_request" "cert-server" {
 resource "tls_locally_signed_cert" "cert-server" {
   cert_request_pem = tls_cert_request.cert-server.cert_request_pem
 
-  #ca_key_algorithm   = tls_private_key.cert-ca.algorithm
   ca_private_key_pem = tls_private_key.cert-ca.private_key_pem
   ca_cert_pem        = tls_self_signed_cert.cert-ca.cert_pem
 
@@ -310,8 +308,10 @@ resource "tls_locally_signed_cert" "cert-server" {
   }
 }
 
-// nomad CLIENT
+// CLIENT
 resource "tls_private_key" "cert-client" {
+  count = length(var.client_ssh_hosts) == 0 ? 0 : 1
+
   algorithm = "RSA"
   rsa_bits  = "2048"
 
@@ -366,8 +366,9 @@ resource "tls_private_key" "cert-client" {
 }
 
 resource "tls_cert_request" "cert-client" {
-  #key_algorithm   = tls_private_key.cert-client.algorithm
-  private_key_pem = tls_private_key.cert-client.private_key_pem
+  count = length(var.client_ssh_hosts) == 0 ? 0 : 1
+
+  private_key_pem = tls_private_key.cert-client[0].private_key_pem
 
   ip_addresses = concat(
     ["127.0.0.1"],
@@ -386,9 +387,10 @@ resource "tls_cert_request" "cert-client" {
 }
 
 resource "tls_locally_signed_cert" "cert-client" {
-  cert_request_pem = tls_cert_request.cert-client.cert_request_pem
+  count = length(var.client_ssh_hosts) == 0 ? 0 : 1
 
-  #ca_key_algorithm   = tls_private_key.cert-ca.algorithm
+  cert_request_pem = tls_cert_request.cert-client[0].cert_request_pem
+
   ca_private_key_pem = tls_private_key.cert-ca.private_key_pem
   ca_cert_pem        = tls_self_signed_cert.cert-ca.cert_pem
 
