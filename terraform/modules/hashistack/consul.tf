@@ -12,9 +12,10 @@ resource "remote_file" "consul_service" {
 
   depends_on = [
     proxmox_vm_qemu.nomad-servers,
-    tls_self_signed_cert.consul-ca,
-    tls_private_key.consul-server,
-    tls_locally_signed_cert.consul-server,
+    module.certificates,
+    # tls_self_signed_cert.consul-ca,
+    # tls_private_key.consul-server,
+    # tls_locally_signed_cert.consul-server,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
@@ -38,9 +39,10 @@ resource "remote_file" "consul_server" {
   depends_on = [
     proxmox_vm_qemu.nomad-servers,
     remote_file.consul_service,
-    tls_self_signed_cert.consul-ca,
-    tls_private_key.consul-server,
-    tls_locally_signed_cert.consul-server,
+    module.certificates,
+    # tls_self_signed_cert.consul-ca,
+    # tls_private_key.consul-server,
+    # tls_locally_signed_cert.consul-server,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
@@ -85,9 +87,10 @@ resource "remote_file" "consul_client_service" {
 
   depends_on = [
     proxmox_vm_qemu.nomad-clients,
-    tls_self_signed_cert.consul-ca,
-    tls_private_key.consul-client,
-    tls_locally_signed_cert.consul-client,
+    module.certificates,
+    # tls_self_signed_cert.consul-ca,
+    # tls_private_key.consul-client,
+    # tls_locally_signed_cert.consul-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
@@ -111,9 +114,10 @@ resource "remote_file" "consul_client" {
   depends_on = [
     proxmox_vm_qemu.nomad-clients,
     remote_file.consul_client_service,
-    tls_self_signed_cert.consul-ca,
-    tls_private_key.consul-client,
-    tls_locally_signed_cert.consul-client,
+    module.certificates,
+    # tls_self_signed_cert.consul-ca,
+    # tls_private_key.consul-client,
+    # tls_locally_signed_cert.consul-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host

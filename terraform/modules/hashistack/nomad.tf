@@ -10,9 +10,10 @@ resource "remote_file" "nomad_service" {
 
   depends_on = [
     proxmox_vm_qemu.nomad-servers,
-    tls_self_signed_cert.nomad-ca,
-    tls_private_key.nomad-client,
-    tls_locally_signed_cert.nomad-client,
+    module.certificates,
+    # tls_self_signed_cert.nomad-ca,
+    # tls_private_key.nomad-client,
+    # tls_locally_signed_cert.nomad-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
@@ -35,9 +36,10 @@ resource "remote_file" "nomad_server" {
   depends_on = [
     proxmox_vm_qemu.nomad-servers,
     remote_file.nomad_service,
-    tls_self_signed_cert.nomad-ca,
-    tls_private_key.nomad-server,
-    tls_locally_signed_cert.nomad-server,
+    module.certificates,
+    # tls_self_signed_cert.nomad-ca,
+    # tls_private_key.nomad-server,
+    # tls_locally_signed_cert.nomad-server,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-servers[count.index].ssh_host
@@ -86,9 +88,10 @@ resource "remote_file" "nomad_client_service" {
 
   depends_on = [
     proxmox_vm_qemu.nomad-clients,
-    tls_self_signed_cert.nomad-ca,
-    tls_private_key.nomad-client,
-    tls_locally_signed_cert.nomad-client,
+    module.certificates,
+    # tls_self_signed_cert.nomad-ca,
+    # tls_private_key.nomad-client,
+    # tls_locally_signed_cert.nomad-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
@@ -111,9 +114,10 @@ resource "remote_file" "nomad_client" {
   depends_on = [
     proxmox_vm_qemu.nomad-clients,
     remote_file.nomad_client_service,
-    tls_self_signed_cert.nomad-ca,
-    tls_private_key.nomad-client,
-    tls_locally_signed_cert.nomad-client,
+    module.certificates,
+    # tls_self_signed_cert.nomad-ca,
+    # tls_private_key.nomad-client,
+    # tls_locally_signed_cert.nomad-client,
   ]
   conn {
     host        = proxmox_vm_qemu.nomad-clients[count.index].ssh_host
