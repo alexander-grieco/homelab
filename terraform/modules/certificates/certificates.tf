@@ -72,7 +72,7 @@ resource "tls_self_signed_cert" "cert-ca" {
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      host        = var.client_ssh_hosts[0]
+      host        = length(var.client_ssh_hosts) == 0 ? "" : var.client_ssh_hosts[0]
       user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
@@ -83,12 +83,13 @@ resource "tls_self_signed_cert" "cert-ca" {
       "echo '${self.cert_pem}' > /etc/certs/${var.service}/${var.service}-ca.pem",
       "sudo chmod 0644 /etc/certs/${var.service}/${var.service}-ca.pem",
     ]
+    on_failure = continue
   }
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      host        = var.client_ssh_hosts[1]
+      host        = length(var.client_ssh_hosts) == 0 ? "" : var.client_ssh_hosts[1]
       user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
@@ -99,12 +100,13 @@ resource "tls_self_signed_cert" "cert-ca" {
       "echo '${self.cert_pem}' > /etc/certs/${var.service}/${var.service}-ca.pem",
       "sudo chmod 0644 /etc/certs/${var.service}/${var.service}-ca.pem",
     ]
+    on_failure = continue
   }
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      host        = var.client_ssh_hosts[2]
+      host        = length(var.client_ssh_hosts) == 0 ? "" : var.client_ssh_hosts[2]
       user        = "alex"
       private_key = var.private_key_file_content
       port        = "22"
@@ -115,6 +117,7 @@ resource "tls_self_signed_cert" "cert-ca" {
       "echo '${self.cert_pem}' > /etc/certs/${var.service}/${var.service}-ca.pem",
       "sudo chmod 0644 /etc/certs/${var.service}/${var.service}-ca.pem",
     ]
+    on_failure = continue
   }
 
   provisioner "local-exec" {

@@ -84,7 +84,7 @@ resource "proxmox_vm_qemu" "vault-servers" {
 
   name        = "vault-server${count.index + 1}"
   desc        = "Vault Server ${count.index + 1}"
-  vmid        = parseint("10${count.index}", 10)
+  vmid        = parseint("10${count.index + 5}", 10)
   target_node = "pve"
 
   onboot = true
