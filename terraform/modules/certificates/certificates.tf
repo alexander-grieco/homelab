@@ -8,7 +8,6 @@ resource "tls_self_signed_cert" "cert-ca" {
   is_ca_certificate     = true
   validity_period_hours = 87600
 
-  #key_algorithm   = tls_private_key.cert-ca.algorithm
   private_key_pem = tls_private_key.cert-ca.private_key_pem
 
   subject {
@@ -366,6 +365,57 @@ resource "tls_private_key" "cert-client" {
       "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global-key.pem",
     ]
   }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = can(var.client_ssh_hosts[3]) == false ? "" : var.client_ssh_hosts[3]
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/${var.service}/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.private_key_pem}' > /etc/certs/${var.service}/${var.datacenter}-client-global-key.pem",
+      "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global-key.pem",
+    ]
+    on_failure = continue
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = can(var.client_ssh_hosts[4]) == false ? "" : var.client_ssh_hosts[4]
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/${var.service}/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.private_key_pem}' > /etc/certs/${var.service}/${var.datacenter}-client-global-key.pem",
+      "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global-key.pem",
+    ]
+    on_failure = continue
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = can(var.client_ssh_hosts[5]) == false ? "" : var.client_ssh_hosts[5]
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/${var.service}/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.private_key_pem}' > /etc/certs/${var.service}/${var.datacenter}-client-global-key.pem",
+      "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global-key.pem",
+    ]
+    on_failure = continue
+  }
 }
 
 resource "tls_cert_request" "cert-client" {
@@ -450,5 +500,56 @@ resource "tls_locally_signed_cert" "cert-client" {
       "echo '${self.cert_pem}' > /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
       "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
     ]
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = can(var.client_ssh_hosts[3]) == false ? "" : var.client_ssh_hosts[3]
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/${var.service}/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.cert_pem}' > /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
+      "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
+    ]
+    on_failure = continue
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = can(var.client_ssh_hosts[4]) == false ? "" : var.client_ssh_hosts[4]
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/${var.service}/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.cert_pem}' > /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
+      "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
+    ]
+    on_failure = continue
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = can(var.client_ssh_hosts[5]) == false ? "" : var.client_ssh_hosts[5]
+      user        = "alex"
+      private_key = var.private_key_file_content
+      port        = "22"
+    }
+    inline = [
+      "sudo mkdir -p /etc/certs/${var.service}/",
+      "sudo chown -R alex:alex /etc/certs/",
+      "echo '${self.cert_pem}' > /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
+      "sudo chmod 0644 /etc/certs/${var.service}/${var.datacenter}-client-global.pem",
+    ]
+    on_failure = continue
   }
 }

@@ -1,0 +1,43 @@
+storage "raft" {
+  path    = "/opt/vault/data/"
+  node_id = "${vault_node_id}"
+
+  retry_join {
+    leader_api_addr         = "https://${server1_ip}:8200"
+    leader_ca_cert_file     = "/etc/certs/vault/vault-ca.pem"
+    leader_client_cert_file = "/etc/certs/vault/homelab-server-global.pem"
+    leader_client_key_file  = "/etc/certs/vault/homelab-server-global-key.pem"
+  }
+  retry_join {
+    leader_api_addr         = "https://${server2_ip}:8200"
+    leader_ca_cert_file     = "/etc/certs/vault/vault-ca.pem"
+    leader_client_cert_file = "/etc/certs/vault/homelab-server-global.pem"
+    leader_client_key_file  = "/etc/certs/vault/homelab-server-global-key.pem"
+  }
+  retry_join {
+    leader_api_addr         = "https://${server3_ip}:8200"
+    leader_ca_cert_file     = "/etc/certs/vault/vault-ca.pem"
+    leader_client_cert_file = "/etc/certs/vault/homelab-server-global.pem"
+    leader_client_key_file  = "/etc/certs/vault/homelab-server-global-key.pem"
+  }
+}
+
+listener "tcp" {
+  address            = "0.0.0.0:8200"
+  cluster_address    = "0.0.0.0:8201"
+  tls_client_ca_file = "/etc/certs/vault/vault-ca.pem"
+  tls_cert_file      = "/etc/certs/vault/homelab-server-global.pem"
+  tls_key_file       = "/etc/certs/vault/homelab-server-global-key.pem"
+}
+
+#seal "awskms" {
+#  region = "us-east-1"
+#  kms_key_id = "12345678-abcd-1234-abcd-123456789101",
+#  endpoint = "example.kms.us-east-1.vpce.amazonaws.com"
+#}
+
+api_addr      = "https://${self_ip_addr}:8200"
+cluster_addr  = "https://${self_ip_addr}:8201"
+ui            = true
+log_level     = "INFO"
+disable_mlock = true
