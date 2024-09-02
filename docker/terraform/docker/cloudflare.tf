@@ -3,10 +3,6 @@ data "cloudflare_zone" "ag_io" {
 }
 
 
-resource "random_password" "tunnel_token" {
-  length = 64
-}
-
 resource "random_bytes" "tunnel_token" {
   length = 64
 }
@@ -14,7 +10,6 @@ resource "random_bytes" "tunnel_token" {
 resource "cloudflare_zero_trust_tunnel_cloudflared" "homelab_tunnel" {
   account_id = data.cloudflare_zone.ag_io.account_id
   name       = "homelab"
-  # secret     = base64sha256(random_password.tunnel_token.result)
   secret     = random_bytes.tunnel_token.base64
   config_src = "cloudflare"
 }

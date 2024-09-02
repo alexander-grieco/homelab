@@ -42,7 +42,7 @@ resource "remote_file" "traefik_config" {
     sudo        = true
     private_key = data.local_file.private_key.content
   }
-  path        = "/tmp/${each.key}"
+  path        = "/opt/${each.key}"
   content     = file("${path.module}/config/traefik/${each.key}")
   permissions = each.value
 }
@@ -124,7 +124,7 @@ resource "docker_container" "traefik" {
   }
   volumes {
     container_path = "/traefik.yml"
-    host_path      = "/tmp/traefik.yml"
+    host_path      = "/opt/traefik.yml"
     read_only      = true
   }
   volumes {
@@ -133,7 +133,7 @@ resource "docker_container" "traefik" {
   }
   # volumes {
   #   container_path = "/config.yml"
-  #   host_path      = "/tmp/config.yml"
+  #   host_path      = "/opt/config.yml"
   #   read_only      = true
   # }
 

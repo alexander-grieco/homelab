@@ -36,8 +36,10 @@ resource "docker_container" "pihole" {
     "TZ=America/Vancouver",
     "DNSMASQ_LISTENING=all",
     "WEBPASSWORD=${var.pihole_admin_password}",
-    # "FTLCONF_LOCAL_IPV4=${var.vm_ip}",
     "PIHOLE_DNS_=10.13.13.1;1.1.1.1;1.0.0.1",
+    "REV_SERVER=true",
+    "REV_SERVER_TARGET=10.13.13.1",
+    "REV_SERVER_CIDR=10.13.13.1/24",
     "WEBTHEME=default-dark",
   ])
 
