@@ -41,3 +41,4 @@ terraform.rc
 # Other
 *.token
 *unseal-keys*
+**DS_Store*
