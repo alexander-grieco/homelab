@@ -19,12 +19,51 @@ locals {
     }
   }
 }
+
+
+resource "remote_file" "cname_config" {
+  conn {
+    host        = var.vm_ip
+    port        = 22
+    user        = "alex"
+    sudo        = true
+    private_key = data.local_file.private_key.content
+  }
+  path        = "/etc-dnsmasq.d/05-pihole-custom-cname.conf"
+  content     = <<-EOT
+    %{for s in local.services~}
+    cname=${s}.${var.local_domain},${var.docker_server_name}.${var.local_domain}
+    %{endfor}
+  EOT
+  permissions = "0644"
+}
+
+resource "remote_file" "a_record_config" {
+  conn {
+    host        = var.vm_ip
+    port        = 22
+    user        = "alex"
+    sudo        = true
+    private_key = data.local_file.private_key.content
+  }
+  path        = "/etc-pihole/custom.list"
+  content     = <<-EOT
+    ${var.vm_ip} ${var.docker_server_name}.${var.local_domain}
+  EOT
+  permissions = "0644"
+}
+
 # Docker Config
 resource "docker_image" "pihole" {
   name = "pihole/pihole:2024.07.0"
 }
 
 resource "docker_container" "pihole" {
+  depends_on = [
+    remote_file.cname_config,
+    remote_file.a_record_config,
+  ]
+
   name         = "pihole"
   image        = docker_image.pihole.image_id
   network_mode = "bridge"

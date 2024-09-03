@@ -24,3 +24,15 @@ variable "vm_ip" {
   type        = string
   default     = "10.2.0.7"
 }
+
+variable "local_domain" {
+  description = "Local domain"
+  type        = string
+  default     = "local.alexgrieco.io"
+}
+
+variable "docker_server_name" {
+  description = "Docker server name"
+  type        = string
+  default     = "docker-server"
+}
