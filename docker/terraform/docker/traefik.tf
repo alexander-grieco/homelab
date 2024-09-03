@@ -131,11 +131,11 @@ resource "docker_container" "traefik" {
     container_path = "/acme.json"
     host_path      = "/usr/local/acme.json"
   }
-  # volumes {
-  #   container_path = "/config.yml"
-  #   host_path      = "/opt/config.yml"
-  #   read_only      = true
-  # }
+  volumes {
+    container_path = "/config.yml"
+    host_path      = "/opt/config.yml"
+    read_only      = true
+  }
 
 }
 
