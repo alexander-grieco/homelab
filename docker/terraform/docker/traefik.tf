@@ -86,6 +86,15 @@ resource "docker_container" "traefik" {
   networks_advanced {
     name = docker_network.homelab.name
   }
+  networks_advanced {
+    name = docker_network.frontend.name
+  }
+  networks_advanced {
+    name = docker_network.backend.name
+  }
+  networks_advanced {
+    name = "bridge"
+  }
 
   dynamic "ports" {
     for_each = local.traefik_ports
