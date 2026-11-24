@@ -3,6 +3,10 @@
 .env.*
 !.env.example
 
+# Docker data files
+**config/
+**-data/
+
 # Local .terraform directories
 **/.terraform/*
 

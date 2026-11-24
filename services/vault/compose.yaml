@@ -45,11 +45,11 @@ services:
     network_mode: service:tailscale # Sidecar configuration to route the service through Tailscale
     container_name: app-${SERVICE}
     command: server # Makes sure data is persisted
+    user: root
     environment:
       - VAULT_API_ADDR=https://${SERVICE}.${TS_DOMAIN}
       - VAULT_ADDR=http://127.0.0.1:8200
-    cap_add:
-      - IPC_LOCK # Lets Vault lock its memory so secrets never get swapped to disk
+      - SKIP_SETCAP=true # mlock is disabled in vault.hcl, so skip granting the mlock capability
     volumes:
       - ./${SERVICE}-data:/vault/file
       - ./vault.hcl:/vault/config/vault.hcl:ro
