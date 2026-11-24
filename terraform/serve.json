@@ -1,0 +1,10 @@
+{
+  "version": "0.0.1",
+  "services": {
+    "svc:vault": {
+      "endpoints": {
+        "tcp:443": "tls-terminated-tcp://127.0.0.1:8200"
+      }
+    }
+  }
+}
