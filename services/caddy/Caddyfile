@@ -1,28 +1,36 @@
+# https://<name>.<DOMAIN> -> https://<name>.<tailnet>.ts.net (Tailscale Service
+# svc:<name>). New Services need no change here and no DNS change.
 # Caddy is itself the Tailscale Service svc:caddy: Tailscale forwards raw TCP
 # from the Service's port 443 to 127.0.0.1:8443, and Caddy does the TLS with
 # the wildcard certificate.
+
 {
-	default_bind 127.0.0.1
-	https_port 8443
-	http_port 8080
-	auto_https disable_redirects # nothing reaches port 80
+  default_bind 127.0.0.1 # never listen on the LAN or tailnet directly
+  https_port 8443
+  http_port 8080
+  auto_https disable_redirects # nothing reaches port 80
 }
 
-*.{$SUBDOMAIN}.{$DOMAIN} {
-	tls {
-		dns cloudflare {env.CF_API_TOKEN}
-	}
+*.{$DOMAIN} {
+  tls {
+    dns cloudflare {env.CF_API_TOKEN}
+    # Check the challenge record via public DNS. Caddy shares the host's
+    # network, where DNS goes through Tailscale (MagicDNS), and its check
+    # timed out there.
+    resolvers 1.1.1.1 1.0.0.1
+  }
 
-  # Caddy can't resolve to itself or it'd be an infinite loop
-	@self host caddy.{$SUBDOMAIN}.{$DOMAIN}
-	respond @self 404
+   # caddy.<DOMAIN> would proxy to svc:caddy, i.e. back to this Caddy, forever.
+   @self host caddy.{$DOMAIN}
+   respond @self 404
 
-	# {labels.N} counts host labels from the right
-	reverse_proxy {labels.3}.{$TS_TAILNET}:443 {
-		header_up Host {upstream_hostport}
-		transport http {
-			tls # Services serve HTTPS with their ts.net certificate
-			resolvers 100.100.100.100 # MagicDNS, for *.ts.net names
-		}
-	}
+   # {labels.N} counts host labels from the right. For DOMAIN=hl.grieco.tech:
+   # tech=0, grieco=1, hl=2, <name>=3.
+   # Placeholder upstreams can't be URLs and must include a port.
+   reverse_proxy {labels.2}.{$TS_TAILNET}:443 {
+     transport http {
+       tls # Services serve HTTPS with their ts.net certificate
+       resolvers 100.100.100.100 # MagicDNS, for *.ts.net names
+     }
+   }
 }
