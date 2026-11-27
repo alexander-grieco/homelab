@@ -17,7 +17,7 @@
     # Check the challenge record via public DNS. Caddy shares the host's
     # network, where DNS goes through Tailscale (MagicDNS), and its check
     # timed out there.
-    resolvers 1.1.1.1 1.0.0.1
+    propagation_timeout 45m
   }
 
    # caddy.<DOMAIN> would proxy to svc:caddy, i.e. back to this Caddy, forever.
