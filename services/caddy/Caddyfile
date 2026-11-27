@@ -8,17 +8,17 @@
 	auto_https disable_redirects # nothing reaches port 80
 }
 
-*.{$DOMAIN} {
+*.{$SUBDOMAIN}.{$DOMAIN} {
 	tls {
 		dns cloudflare {env.CF_API_TOKEN}
 	}
 
   # Caddy can't resolve to itself or it'd be an infinite loop
-	@self host caddy.{$DOMAIN}
+	@self host caddy.{$SUBDOMAIN}.{$DOMAIN}
 	respond @self 404
 
 	# {labels.N} counts host labels from the right
-	reverse_proxy {labels.2}.{$TS_TAILNET}:443 {
+	reverse_proxy {labels.3}.{$TS_TAILNET}:443 {
 		header_up Host {upstream_hostport}
 		transport http {
 			tls # Services serve HTTPS with their ts.net certificate
