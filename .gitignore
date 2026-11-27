@@ -1,11 +1,10 @@
 # .env files
 .env
-.env.*
 !.env.example
 
 # Docker data files
 **config/
-**-data/
+**data/
 
 # Local .terraform directories
 **/.terraform/*

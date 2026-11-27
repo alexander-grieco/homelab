@@ -1,0 +1,17 @@
+services:
+  application:
+    build: . # see Dockerfile
+    image: caddy-cloudflare:local
+    container_name: app-caddy
+    # Host networking: Caddy binds 127.0.0.1:8443 on the host (where Tailscale
+    # forwards svc:caddy) and reaches *.ts.net via the host's Tailscale.
+    network_mode: host
+    environment:
+      - CF_API_TOKEN=${CF_API_TOKEN} # Zone.Zone:Read + Zone.DNS:Edit on grieco.tech
+      - TS_TAILNET=${TS_TAILNET}
+      - DOMAIN=${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy_data:/data # certificate + ACME account; keep it
+      - ./caddy_config:/config
+    restart: always

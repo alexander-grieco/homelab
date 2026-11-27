@@ -5,6 +5,11 @@
       "endpoints": {
         "tcp:443": "tls-terminated-tcp://127.0.0.1:8200"
       }
+    },
+    "svc:caddy": {
+      "endpoints": {
+        "tcp:443": "tls-terminated-tcp://127.0.0.1:8443"
+      }
     }
   }
 }
